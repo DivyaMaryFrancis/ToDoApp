@@ -5,19 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>To-Do List</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://kit.fontawesome.com/4a69fbb8c2.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <div class="container">
-    <h2>To-Do List</h2>
+    <h2>To-Do</h2>
+    <h3 id="quoteHeading"></h3>
+    <div id="toast" class="toast"></div>
+
 <div class="todo-app">
     <div class="row">
         <input type="text" id="taskInput" placeholder="Add a new task...">
-        <button onclick="addTask()">Add</button>
+        <button id="addTaskButton" >
+<i class="fa-solid fa-plus fa-lg" style="color: #ffffff;"></i>        </button>
     </div>
     <ul id="listContainer">
         <!-- Tasks will be added here -->
-
+|
     </ul>
+    <p class="empty">Your task list is empty</p>
 </div>
 
     
