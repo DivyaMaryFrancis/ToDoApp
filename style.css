@@ -122,6 +122,10 @@ background: #1b1919;
     padding-left: 30px;
 
 }
+.task-text.completed {
+      text-decoration: line-through;
+      color: #777;
+}
 
 
 

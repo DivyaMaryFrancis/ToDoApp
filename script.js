@@ -1,112 +1,132 @@
-const taskInput = document.getElementById('taskInput');
-const listContainer = document.getElementById('listContainer');
-const emptyMessage = document.querySelector('.empty');
-const addTaskButton = document.getElementById('addTaskButton');
+const taskInput = document.getElementById("taskInput");
+const listContainer = document.getElementById("listContainer");
+const emptyMessage = document.querySelector(".empty");
+const addTaskButton = document.getElementById("addTaskButton");
 const heading = document.getElementById("quoteHeading");
+
 let tasks = [];
-let editingIndex = null; // Track which task is being edited
+let editingTaskId = null; 
+
 
 function toggleEmptyMessage() {
-    emptyMessage.style.display = tasks.length === 0 ? 'block' : 'none';
+  emptyMessage.style.display = tasks.length === 0 ? "block" : "none";
 }
+
 
 function renderTasks() {
-    listContainer.innerHTML = "";
-    // Sort: unchecked first
-    const sortedTasks = [...tasks].sort((a, b) => a.checked - b.checked);
-    sortedTasks.forEach((task, idx) => {
-        let li = document.createElement("li");
-        li.innerHTML = `
-            <input type="checkbox" class="checkbox" ${task.checked ? "checked" : ""} data-idx="${tasks.indexOf(task)}">
-            <span class="task-text">${task.text}</span>
-            <div class="task-buttons">
-               ${!task.checked 
-                    ? `<button class="edit"><i class="fa-regular fa-pen-to-square" style="color: #ffffff;"></i></button>` 
-                    : ""}
-                <button class="delete"><i class="fa-regular fa-trash-can" style="color: #ffffff;"></i></button>
-            </div>
-        `;
-        listContainer.appendChild(li);
-    });
-    toggleEmptyMessage();
+  listContainer.innerHTML = "";
+
+  const sortedTasks = [...tasks].sort((a, b) => a.checked - b.checked);
+
+  sortedTasks.forEach((task) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <input type="checkbox" class="checkbox" ${task.checked ? "checked" : ""} data-id="${task.id}">
+      <span class="task-text ${task.checked ? "completed" : ""}">${task.text}</span>
+      <div class="task-buttons">
+        ${!task.checked ? `<button class="edit"><i class="fa-regular fa-pen-to-square" style="color: #ffffff;"></i></button>` : ""}
+        <button class="delete"><i class="fa-regular fa-trash-can" style="color: #ffffff;"></i></button>
+      </div>
+    `;
+    listContainer.appendChild(li);
+    li.dataset.id = task.id; 
+  });
+
+  toggleEmptyMessage();
 }
 
+
 function saveList() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
 function loadList() {
-    tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-    renderTasks();
+  tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+  renderTasks();
 }
+
 
 function showToast(message) {
   const toast = document.getElementById("toast");
   toast.textContent = message;
   toast.classList.add("show");
-  setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3000);
+  setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
 
 function addTask() {
-    const taskText = taskInput.value.trim();
-    if (taskText === '') {
-        showToast("Please enter a task.");
-        return;
-    }
+  const taskText = taskInput.value.trim();
+  if (taskText === "") {
+    showToast("Please enter a task.");
+    return;
+  }
 
-    if (editingIndex !== null) {
-        // Edit mode
-        tasks[editingIndex].text = taskText;
-        editingIndex = null;
-        addTaskButton.innerHTML = '<i class="fa-solid fa-plus fa-lg" style="color: #ffffff;"></i>';
-    } else {
-        // Add mode
-        tasks.push({ text: taskText, checked: false });
-    }
+  if (editingTaskId) {
+    
+    const task = tasks.find((t) => t.id === editingTaskId);
+    if (task) task.text = taskText;
+    editingTaskId = null;
+    addTaskButton.innerHTML =
+      '<i class="fa-solid fa-plus fa-lg" style="color: #ffffff;"></i>';
+  } else {
+  
+    tasks.push({ id: Date.now(), text: taskText, checked: false });
+  }
 
-    taskInput.value = "";
-    saveList();
-    renderTasks();
+  taskInput.value = "";
+  saveList();
+  renderTasks();
 }
 
-addTaskButton.addEventListener('click', addTask);
 
-taskInput.addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        //event.preventDefault();
-        addTask();
-    }
+addTaskButton.addEventListener("click", addTask);
+
+taskInput.addEventListener("keypress", function (event) {
+  if (event.key === "Enter") {
+    addTask();
+  }
 });
 
-listContainer.addEventListener("click", function(e) {
-    // Checkbox toggle
-    if (e.target.classList.contains("checkbox")) {
-        const idx = parseInt(e.target.getAttribute("data-idx"));
-        tasks[idx].checked = e.target.checked;
-        saveList();
-        renderTasks();
+listContainer.addEventListener("click", function (e) {
+  const li = e.target.closest("li");
+  if (!li) return;
+  const taskId = parseInt(li.dataset.id, 10);
+
+
+  if (e.target.closest(".checkbox")) {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) task.checked = e.target.checked;
+    saveList();
+    renderTasks();
+    return;
+  }
+
+
+  if (e.target.closest(".delete")) {
+    if (editingTaskId === taskId) {
+      showToast("This task is being edited and cannot be deleted right now.");
+      return;
     }
-    // Delete
-    else if (e.target.closest(".delete")) {
-        const li = e.target.closest("li");
-        const idx = Array.from(li.querySelector('.checkbox').getAttribute("data-idx"));
-        tasks.splice(idx, 1);
-        saveList();
-        renderTasks();
+    tasks = tasks.filter((t) => t.id !== taskId);
+    saveList();
+    renderTasks();
+    return;
+  }
+
+  
+  if (e.target.closest(".edit")) {
+    const task = tasks.find((t) => t.id === taskId);
+    if (task) {
+      taskInput.value = task.text;
+      editingTaskId = task.id;
+      addTaskButton.innerHTML =
+        '<i class="fa-regular fa-pen-to-square" style="color: #ffffff;"></i>';
+      taskInput.focus();
     }
-    // Edit
-    else if (e.target.closest(".edit")) {
-        const li = e.target.closest("li");
-        const idx = parseInt(li.querySelector('.checkbox').getAttribute("data-idx"));
-        taskInput.value = tasks[idx].text;
-        editingIndex = idx;
-        addTaskButton.innerHTML = '<i class="fa-regular fa-pen-to-square" style="color: #ffffff;"></i>';
-        taskInput.focus();
-    }
+    return;
+  }
 }, false);
+
 
 const quotes = [
   "Small steps every day lead to big results.",
@@ -122,14 +142,10 @@ const quotes = [
 ];
 
 function setRandomQuote() {
-  
   const randomIndex = Math.floor(Math.random() * quotes.length);
   heading.textContent = quotes[randomIndex];
 }
 
-// Call on load
+
 setRandomQuote();
-
-
-// Initial load
 loadList();
