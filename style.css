@@ -233,7 +233,7 @@ background: #1b1919;
   .todo-app {
     padding: 5px;
     border-radius: 8px;
-    margin: 0px auto 5px auto;
+    margin: 1px auto 5px auto;
   }
 
   #progressText {
