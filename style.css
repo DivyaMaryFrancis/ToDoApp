@@ -234,6 +234,13 @@ background: #1b1919;
     border-radius: 8px;
     margin: 2px auto 5px auto;
   }
+
+  #progressText {
+    font-size: 14px;
+    margin-top: 1px;
+    min-height: 14px;
+    height: 14px;
+  }
   .row {
     padding: 5px;
     gap: 6px;
