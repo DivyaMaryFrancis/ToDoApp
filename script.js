@@ -57,13 +57,14 @@ function showToast(message) {
 function updateProgress() {
   const completed = tasks.filter(t => t.checked).length;
   const total = tasks.length;
+ 
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
 
   const bar = document.getElementById("progressBar");
   const text = document.getElementById("progressText");
 
   bar.style.width = percent + "%";
-  text.textContent = `${percent}% complete`;
+    text.textContent = total === 0 ? "" : `${percent}% complete`;
 }
 
 

@@ -13,7 +13,7 @@
 .todo-app{
     max-width: 1000px;
     width: 100%;
-    margin: 4px auto 20px auto;
+    margin: 5px auto 20px auto;
     padding: 20px ;
     background: #1e1e1e;
     border-radius: 20px;
@@ -44,7 +44,7 @@ h2{
   background: #1e1e1e;
   border-radius: 10px;
   height: 15px;
-  margin: 40px auto 0 auto;
+  margin: 20px auto 0 auto;
   overflow: hidden;
 }
 
@@ -57,9 +57,12 @@ h2{
 
 #progressText {
   font-size: 18px;
-  margin-top: 5px;
+  margin-top: 2px;
+  min-height: 18px;
+  height: 18px;
   text-align: center;
     color: #c7c6c6;
+    transition-delay: 100ms;
 }
 
 .row{
