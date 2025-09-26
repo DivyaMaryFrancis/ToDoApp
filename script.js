@@ -33,6 +33,7 @@ function renderTasks() {
   });
 
   toggleEmptyMessage();
+    updateProgress();
 }
 
 
@@ -52,6 +53,19 @@ function showToast(message) {
   toast.classList.add("show");
   setTimeout(() => toast.classList.remove("show"), 3000);
 }
+
+function updateProgress() {
+  const completed = tasks.filter(t => t.checked).length;
+  const total = tasks.length;
+  const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+  const bar = document.getElementById("progressBar");
+  const text = document.getElementById("progressText");
+
+  bar.style.width = percent + "%";
+  text.textContent = `${percent}% complete`;
+}
+
 
 
 function addTask() {
@@ -94,6 +108,10 @@ listContainer.addEventListener("click", function (e) {
 
 
   if (e.target.closest(".checkbox")) {
+    if (editingTaskId === taskId) {
+      showToast("This task is being edited and cannot be completed right now.");
+      return;
+    }
     const task = tasks.find((t) => t.id === taskId);
     if (task) task.checked = e.target.checked;
     saveList();
