@@ -7,12 +7,12 @@ const heading = document.getElementById("quoteHeading");
 let tasks = [];
 let editingTaskId = null; 
 
-
+//Show or hide the "Your task list is empty" message
 function toggleEmptyMessage() {
   emptyMessage.style.display = tasks.length === 0 ? "block" : "none";
 }
 
-
+// Render the task list ,also sort tasks so that uncompleted tasks appear first
 function renderTasks() {
   listContainer.innerHTML = "";
 
@@ -36,17 +36,17 @@ function renderTasks() {
     updateProgress();
 }
 
-
+// Save the task list to localStorage
 function saveList() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
-
+// Load the task list from localStorage
 function loadList() {
   tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
   renderTasks();
 }
 
-
+// Show a temporary toast message when rthe user tries to delete or complete a task that is being edited
 function showToast(message) {
   const toast = document.getElementById("toast");
   toast.textContent = message;
@@ -54,6 +54,7 @@ function showToast(message) {
   setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
+// Update the progress bar and text based on completed tasks
 function updateProgress() {
   const completed = tasks.filter(t => t.checked).length;
   const total = tasks.length;
@@ -68,7 +69,7 @@ function updateProgress() {
 }
 
 
-
+// Add a new task or save edits to an existing task
 function addTask() {
   const taskText = taskInput.value.trim();
   if (taskText === "") {
@@ -93,7 +94,7 @@ function addTask() {
   renderTasks();
 }
 
-
+// Event listeners for adding tasks
 addTaskButton.addEventListener("click", addTask);
 
 taskInput.addEventListener("keypress", function (event) {
@@ -101,13 +102,13 @@ taskInput.addEventListener("keypress", function (event) {
     addTask();
   }
 });
-
+//event listener for task actions (complete, edit, delete)
 listContainer.addEventListener("click", function (e) {
   const li = e.target.closest("li");
   if (!li) return;
   const taskId = parseInt(li.dataset.id, 10);
 
-
+// Handle checkbox toggle
   if (e.target.closest(".checkbox")) {
     if (editingTaskId === taskId) {
       showToast("This task is being edited and cannot be completed right now.");
@@ -120,7 +121,7 @@ listContainer.addEventListener("click", function (e) {
     return;
   }
 
-
+// Handle delete button
   if (e.target.closest(".delete")) {
     if (editingTaskId === taskId) {
       showToast("This task is being edited and cannot be deleted right now.");
@@ -132,7 +133,7 @@ listContainer.addEventListener("click", function (e) {
     return;
   }
 
-  
+  // Handle edit button
   if (e.target.closest(".edit")) {
     const task = tasks.find((t) => t.id === taskId);
     if (task) {
@@ -146,7 +147,6 @@ listContainer.addEventListener("click", function (e) {
   }
 }, false);
 
-
 const quotes = [
   "Small steps every day lead to big results.",
   "Your future is created by what you do today, not tomorrow.",
@@ -159,7 +159,7 @@ const quotes = [
   "Dream big. Start small. Act now.",
   "One thing at a time adds up to everything in time."
 ];
-
+//  Set a random quote as the heading
 function setRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   heading.textContent = quotes[randomIndex];
